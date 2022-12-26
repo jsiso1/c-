@@ -2,19 +2,54 @@
 //
 
 #include <iostream>
+#include <unordered_set>
+
+using namespace std;
+
+
+
+struct point {
+    uint32_t x;
+    uint32_t y;
+
+    point(): x {0}, y{0} {};
+    point(uint32_t xx, uint32_t yy): x{xx}, y{yy} {};
+
+    bool operator==(const point& a) const {
+        return (a.x == x && a.y == y);
+    };
+
+    bool operator<(const point& b) const{
+        return b.x < x;
+    }
+
+};
+
+
+struct pointHash {
+public:
+    size_t operator()(const point p) const
+    {
+        return std::hash<uint32_t>()(p.x) ^ std::hash<uint32_t>()(p.y);
+    }
+};
+
+
 
 int main()
 {
+
+    unordered_set<point, pointHash> memo;
+    point newpair = point{ 1,1 };
+    memo.insert(newpair);
+
+    if (memo.count(point{ 1, 1 })) {
+        cout << "it exists \n";
+    }
+
+    if (!memo.count(point{ 100, 1 })) {
+        cout << "it doesn't exist \n";
+    }
+
     std::cout << "Hello World!\n";
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
