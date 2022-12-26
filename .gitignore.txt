@@ -1,0 +1,8 @@
+*.vcxproj
+*.vcxproj.*
+*.suo
+*.vsidx
+*ipch
+*read.lock
+*.db
+*.sln
