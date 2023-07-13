@@ -1,0 +1,5 @@
+brew install gcc
+g++-13 —version
+cd /usr/local/bin/
+ln -s g++-13 g++
+g++ —version
