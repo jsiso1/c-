@@ -1,8 +1,7 @@
-
 #include <bits/stdc++.h>
-
+ 
 using namespace std;
-
+ 
 void __print(int x) {cerr << x;}
 void __print(long x) {cerr << x;}
 void __print(long long x) {cerr << x;}
@@ -16,7 +15,7 @@ void __print(char x) {cerr << '\'' << x << '\'';}
 void __print(const char *x) {cerr << '\"' << x << '\"';}
 void __print(const string &x) {cerr << '\"' << x << '\"';}
 void __print(bool x) {cerr << (x ? "true" : "false");}
-
+ 
 template<typename T, typename V>
 void __print(const pair<T, V> &x) {cerr << '{'; __print(x.first); cerr << ','; __print(x.second); cerr << '}';}
 template<typename T>
@@ -29,65 +28,94 @@ void _print(T t, V... v) {__print(t); if (sizeof...(v)) cerr << ", "; _print(v..
 #else
 #define debug(x...)
 #endif
-
+ 
 mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ 
+using ll = long long;
+const double pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
+const string pi_string = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
 
+const int MOD = 998244353;
 
-
-long long MINF = 0ll - 1e18+7;
-const int MOD = 1e9+7;
-const int INF = 1e9+7;
-const int N = 2e5+5;
-	
-int solve () {
-	long long n, l, h;
-	cin >> n >> l >> h;
-	vector<long long> v(n);
-	for (int i = 0; i<n; ++i) {
-		cin >> v[i];
+class Compare {
+	public:
+	bool operator()(pair<int, int>& a, pair<int, int>& b) {
+		return a.first < b.first;
 	}
-	
-	sort(v.begin(), v.end());
+};
 
-	long long ans1 = 0;
-	int j = -1;
-	for (int i = 1; i<n && v[i]<l; ++i) {
-		if (v[i]+v[i-1] < l) {
-			ans1 += i;
-		} else {
-			if (j==-1) j=i-1;
-			while (j>=0 && v[i] + v[j] >= l) j--;
-			if (j == -1) break;
-			ans1 += j+1;
-		}
+ll POW(ll a, ll b) {
+	ll result = 1;
+	ll x = a;
+	while (b) {
+		if (b%2 == 1)
+			result = (result*x)%MOD;
+		x = (x*x)%MOD;
+		b = b >> 1;
 	}
-
-	long long ans2 = 0;
-	j = -1;
-	for (int i = 1; i<n && v[i]<h; ++i) {
-		if (v[i]+v[i-1] <= h) {
-			ans2 += i;
-		} else {
-			if (j==-1) j=i-1;
-			while (j>=0 && v[i] + v[j] > h) j--;
-			if (j == -1) break;
-			ans2 += j+1;
-		}
-	}
-	
-	cout << ans2 - ans1 << endl;
-	
-	return 0;
-
+	return result%MOD;
 }
 
+ll inverse(ll x) {
+	return POW(x, MOD-2);
+}
+const int M = 1e6+10;
+const int N = 2250;
+ll fact[2*N];
+ll invf[2*N];
+const long long INF = 1e18;
+
+int v[40];
+
+
+int gcd(int a,int b) {
+	if (b==0) return a;
+	return gcd(b, a%b);
+}
+
+array<int, 3> EUA(int a, int b) {
+	int x, y, u, v;
+	x = v = 0;
+	y = u = 1;
+
+	while (a != 0) {
+		int q = b/a;
+		int r = b%a;
+		int n = x-u*q;
+		int m = y-v*q;
+		b = a;
+		a = r;
+		x = u;
+		y = v;
+		u = n;
+		v = m;
+	}
+	int gcd = b;
+	return {b, x, y};
+}
+
+
+
+void solve() {	
+	ll n;
+	cin >> n;
+
+
+	auto x = gcd(15,12);
+	debug(x);
+	auto y = EUA(3,5);
+	debug(y);
+
+
+
+} 
 int main () 	{
 	std::ios::sync_with_stdio(false);
 	cin.tie(0);
 	int TC;
-	cin >> TC;
+	cin >> TC;	
 	for (int i=0;i<TC;++i)
 		solve();
 	return 0;
-
+ 
 }
