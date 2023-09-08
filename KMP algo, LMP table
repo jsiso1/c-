@@ -1,0 +1,53 @@
+class Solution {
+public:
+    array<int, 3> EUA(int a, int b) {
+        int x,y,u,v;
+        x = 0, v =0;
+        y = 1, u =1;
+
+        while (b > 0) {
+            int r = a%b;
+            int q = a/b;
+            a = b;
+            b = r;
+
+            int n = x - u*q;
+            int m = y - v*q;
+            x = u;
+            y = v;
+            u = n;
+            v = m;
+        }
+        return {a, y, x};
+    }
+
+
+
+    string longestPrefix(string s) {
+        vector<int> lpm((int)s.length());
+        createLPM(lpm, s);
+        return s.substr(0, lpm.back());
+    }
+
+
+    void createLPM(vector<int>& lpm, string& s) {
+        lpm[0] = 0;
+        int n = (int)s.length();
+        int i = 0, j = 1;
+
+        while (j < n) {
+            if (s[i] == s[j]) {
+                i++;
+                lpm[j] = i;
+            } else {
+                if (i > 0) {
+                    i = lpm[i-1];
+                    continue;
+                } else {
+                    lpm[j] = 0;
+                }
+            }
+            j++;
+        }
+    }
+};
