@@ -1,0 +1,68 @@
+using ll = long long;
+const int MOD = 1e9+7;
+
+struct SegmentTree {
+    vector<ll> lazy;
+    vector<ll> sum;
+    vector<ll> sqr;
+    int n;
+
+    SegmentTree(int _n) {
+        n = _n;
+        lazy.resize(4*n, 0);
+        sum.resize(4*n, 0);
+        sqr.resize(4*n, 0);
+    }
+
+    void update_lazy(int l, int r, int i) {
+        if (l != r) {
+            lazy[i*2 + 1] += lazy[i];
+            lazy[i*2 + 2] += lazy[i];
+        }
+        ll gap = r-l+1;
+        ll new_sum = sum[i] + lazy[i]*gap;
+        ll new_sqr = sqr[i] + lazy[i]*sum[i]*2 + lazy[i]*lazy[i]*gap;
+
+        sum[i] = new_sum%MOD;
+        sqr[i] = new_sqr%MOD;
+        lazy[i] = 0;
+    }
+
+    void addOne(int i, int left, int right, int l, int r) {
+        if (r == -1) r+=n;
+        if (lazy[i])
+            update_lazy(left, right, i);
+
+        if (right < l || left > r) return;
+        if (left >= l && right <= r) {
+            lazy[i] = 1;
+            update_lazy(left,right,i);
+            return;
+        }
+        int m = (left+right) >> 1;
+
+        addOne(i*2+1, left, m, l, r);
+        addOne(i*2+2, m+1, right, l, r);
+        
+        sum[i] = (sum[i*2+1] + sum[i*2+2])%MOD;
+        sqr[i] = (sqr[i*2+1] + sqr[i*2+2])%MOD;
+    }
+
+};
+
+class Solution {
+public:
+    int sumCounts(vector<int>& nums) {
+        int n =(int)nums.size();
+        vector<int> mp(100001, -1);
+        SegmentTree tree(n);
+        long long ans = 0;
+
+        for (int i = 0; i<n; ++i) {
+            tree.addOne(0, 0, n-1, mp[nums[i]]+1, i);
+            ans = (ans + tree.sqr[0])%MOD;
+            mp[nums[i]] = i;
+        }
+        return ans;
+    }
+};
