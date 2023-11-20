@@ -1,0 +1,57 @@
+mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+class Solution {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        int n = (int)nums.size();
+        k = n - k;
+        assert(k < n && k>= 0);
+        quickselect(nums, k);
+        return nums[k];
+    }
+
+    pair<int, int> partition(vector<int>& nums, int l, int r) {
+        if (l == r)
+            return {l, r};
+        uniform_int_distribution<> uid(l, r);
+        int random_idx = uid(rnd);
+        swap(nums[l], nums[random_idx]);
+        
+        int comp = nums[l];
+        int low = l-1;
+        int mid = l;
+        //lomuto partition
+        for (int i = l+1; i<=r; ++i) {
+            if (nums[i] < comp) {
+                low++;
+                swap(nums[i], nums[low]);
+                --i;
+            } else if (nums[i] == comp) {
+                mid++;
+                swap(nums[i], nums[mid]);
+            } else {
+                continue;
+            }
+        }
+
+        return {low+1, mid};
+    }
+
+    void quickselect(vector<int>& nums, int k) {
+        int h = (int)nums.size() -1;
+        int l = 0;
+
+        while (l<=h) {
+            pair<int, int> re = partition(nums, l, h);
+            if (re.first <= k && re.second >= k)
+                return;
+            if (re.first >= k)
+                h = re.first-1;
+            else
+                l = re.second+1;
+        }
+        return;
+
+    }
+
+
+};
