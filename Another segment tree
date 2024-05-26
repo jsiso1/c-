@@ -1,0 +1,135 @@
+class Segment {
+    public:
+    vector<int> left;
+    vector<int> right;
+    vector<int> mid;
+    vector<int> sz;
+    int n;
+    
+    Segment(int _n) {
+        n = _n;
+        left.resize(4*n);
+        right.resize(4*n);
+        mid.resize(4*n);
+        sz.resize(4*n);
+        init(0, 0, n-1);
+    }
+    
+    void init(int idx, int l2, int r2) {
+        if (l2 == r2 && l2 == 0) return;
+        if (l2 == r2) {
+            left[idx] = 1;
+            right[idx] = 1;
+            mid[idx] = 1;
+            sz[idx] = 1;
+            return;
+        }
+        
+        int m = (l2+r2)/2;
+        init(idx*2+1, l2, m);
+        init(idx*2+2, m+1, r2);
+        sz[idx] = sz[idx*2 + 1] + sz[idx*2 + 2];
+        mid[idx] = sz[idx];
+        left[idx] = sz[idx];
+        right[idx] = sz[idx];
+    }
+    
+    void update(int idx, int index, int l2, int r2) {
+        // cout << idx << endl;
+        // cout << index << " " << l2 << " " << r2 << endl;
+        if (l2 == r2) {
+            left[idx] = 0;
+            right[idx] = 0;
+            mid[idx] = 0;
+            return;
+        }
+
+        int m = (l2+r2)/2;
+        if (index <= m)
+            update(idx*2+1, index, l2, m);
+        if (index >= m+1)
+            update(idx*2+2, index, m+1, r2);
+        
+        int rightnext = right[idx*2+2];
+        if (rightnext == sz[idx*2+2]) {
+            rightnext += right[idx*2+1];
+        }
+        
+        int leftnext = left[idx*2+1];
+        if (leftnext == sz[idx*2+1]) {
+            leftnext += left[idx*2+2];
+        }
+        // cout << leftnext << " " << rightnext << endl;
+        
+        int maxim = max(mid[idx*2 + 2], mid[idx*2 + 1]);
+        maxim = max(maxim, left[idx*2+2] + right[idx*2+1]);
+        mid[idx] = maxim;
+        left[idx] = leftnext;
+        right[idx] = rightnext;
+    }
+    
+
+    
+    array<int,4> request(int idx, int l1, int r1, int l2, int r2) {
+        if (r1 < l2 || l1 > r2)
+            return {0,0,0,0};
+        if (l1 <= l2 && r1 >= r2) {
+            return {left[idx], right[idx], mid[idx], sz[idx]};
+        }
+        
+        int m = (l2 + r2)/2;
+        array<int,4> releft = {0,0,0,0};
+        array<int,4> reright = {0,0,0,0};
+        if (l1 <= m)
+            releft = request(idx*2 + 1, l1,r1,l2,m);
+        if (r1 >= m+1)
+            reright = request(idx*2 + 2, l1,r1,m+1,r2);
+        
+        int rightnext = reright[1];
+        if (rightnext == reright[3]) {
+            rightnext += releft[1];
+        }
+        
+        int leftnext = releft[0];
+        if (leftnext == releft[3]) {
+            leftnext += reright[0];
+        }
+        
+        int maxim = max(reright[2], releft[2]);
+        maxim = max(maxim, reright[0] + releft[1]);
+        int size = releft[3] + reright[3];
+        return {leftnext, rightnext, maxim, size};   
+    }  
+};
+
+class Solution {
+public:
+    vector<bool> getResults(vector<vector<int>>& queries) {
+        int n = 50001;
+        Segment seg(n);
+        
+        vector<bool> re;
+        for (auto& each: queries) {
+            int t = each[0];
+            if (t == 1) {
+                int x = each[1];
+                seg.update(0, x, 0, n-1);
+            } else {
+                int x = each[1];
+                int sz = each[2];
+                array<int,4> it = seg.request(0, 0, x-1, 0, n-1);
+                int gap = it[2];
+                if (x < sz) { re.push_back(false); continue; }
+                if (gap+1 >= sz) {
+                    re.push_back(true);
+                } else
+                    re.push_back(false);
+            }
+        }
+        
+        
+        return re;
+        
+        
+    }
+};
