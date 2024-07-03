@@ -1,0 +1,112 @@
+//https://leetcode.com/problems/erect-the-fence/editorial/
+//https://www.youtube.com/watch?v=iQ2euzTj6Eo&t=4s
+
+struct Point {
+    int x;
+    int y;
+    Point(vector<int>& a) {
+        x = a[0];
+        y = a[1];
+    }
+    Point(int _x, int _y) {
+        x = _x;
+        y = _y;
+    }
+
+    int operator*(Point a) {
+        int xx = -x * a.y;
+        int yy = + (y * a.x);
+        return xx + yy;
+    }
+
+    bool operator==(Point a) {
+        return x == a.x && y == a.y;
+    }
+
+};
+
+class Solution {
+public:
+    Point getVector(Point& a, Point& b) {
+        return Point(b.x - a.x, b.y - a.y);
+    }
+
+    int crossProduct(Point& a, Point& b, Point& c) {
+        Point a1 = getVector(a, b);
+        Point a2 = getVector(a, c);
+        int re = a1 * a2;
+        return re;
+    }
+
+    vector<vector<int>> outerTrees(vector<vector<int>>& trees) {
+        int n = (int)trees.size();
+        if (n == 1)
+            return trees;
+        vector<Point> v;
+        for (auto each: trees) {
+            v.push_back(Point(each));
+        }
+
+        sort(v.begin(), v.end(), [&](Point& a, Point& b) {
+            if (a.x == b.x)
+                return a.y > b.y;
+            return a.x < b.x;
+        });
+
+        
+        vector<Point> result;
+        result.push_back(v[0]);
+        result.push_back(v[1]);
+
+        auto convert = [&]() -> vector<vector<int>> {
+            vector<vector<int>> ans;
+            for (auto each: result)
+                ans.push_back({each.x, each.y});
+            return ans;
+        };
+
+        for (int i = 2; i<n; ++i) {
+            result.push_back(v[i]);
+            while ((int) result.size() > 2) {
+                int sz = (int)result.size();
+                int z = crossProduct(result[sz-3], result[sz-2], result[sz-1]);
+                if (z > 0) {
+                    Point temp = result.back();
+                    result.pop_back(); result.pop_back();
+                    result.push_back(temp);
+                } else
+                    break;
+            }
+        }
+
+
+        sort(v.begin(), v.end(), [&](Point& a, Point& b) {
+            if (a.x == b.x)
+                return a.y < b.y;
+            return a.x > b.x;
+        });
+
+        result.push_back(v[1]);
+        for (int i = 2; i<n; ++i) {
+            result.push_back(v[i]);
+            while ((int) result.size() > 2) {
+                int sz = (int)result.size();
+                int z = crossProduct(result[sz-3], result[sz-2], result[sz-1]);
+                if (z > 0) {
+                    Point temp = result.back();
+                    result.pop_back(); result.pop_back();
+                    result.push_back(temp);
+                } else
+                    break;
+            }
+        }
+
+        sort(result.begin(), result.end(), [&](Point& a, Point& b) {
+            if (a.x == b.x) return a.y < b.y;
+            return a.x < b.x;
+        });
+        result.erase(unique(result.begin(), result.end()), result.end());
+
+        return convert();
+    }
+};
