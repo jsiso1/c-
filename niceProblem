@@ -1,0 +1,35 @@
+https://codeforces.com/contest/1379/problem/B
+void solve() {
+	long long l, r, m;
+	cin >> l >> r >> m;
+
+	vector<int> mp1(500001, -1);
+	vector<int> mp2(500001, -1);
+	for (int i = l; i<=r; ++i) {
+		if (m%i == 0) {
+			mp1[0] = i;
+			mp1[i] = i;
+			mp2[i] = i;
+			continue;
+		}
+		mp1[m%i] = i;
+		mp2[(i - m%i)] = i;
+	}
+
+	for (int diff = 0; diff<=r-l; ++diff) {
+		//m + diff
+		//m - diff
+		if (m - diff > 0 && mp1[diff]!=-1) {
+			cout << mp1[diff] << " " << l+diff << " " << l << endl;
+			return;
+		}
+
+		if (mp2[diff]!=-1) {
+			cout << mp2[diff] << " " << l << " " << l+diff << endl;
+			return;
+		}
+	}
+	
+
+	
+}
