@@ -1,0 +1,32 @@
+//count the number of ways to use exactly n chips of X types that sum up to up to N
+//simulate each move n times. in each move, we could skip the chip and go to next one
+//after skipping/not skipping, we have to add one more chip to the chips
+//copy the values to new dp
+
+	int N = 60000;
+	vector<vector<long long>> dp(x+1, vector<long long>(N, 0));
+	vector<vector<long long>> ndp(x+1, vector<long long>(N, 0));
+	dp[1][0] = 1;
+
+	for (int z = 1; z<=n; ++ z) {
+		for (int t=1; t<x; ++t) 
+			for (int c = 0; c<=N; ++c) {
+				dp[t+1][c] += dp[t][c];
+				dp[t+1][c] %= MOD;
+			}
+		
+		for (int t =1; t<=x; ++t)
+			for (int c = 0; c<=N; ++c) if (dp[t][c] > 0) {
+				if (c + fib[t] <= N) {
+					ndp[t][c+fib[t]] += dp[t][c];
+					ndp[t][c+fib[t]] %= MOD;
+				} else
+					break;
+			}
+		
+		for (int t =1; t<=x; ++t)
+			for (int c =0; c<=N; ++c) {
+				dp[t][c] = ndp[t][c];
+				ndp[t][c] = 0;
+			}
+	}
