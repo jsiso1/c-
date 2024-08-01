@@ -1,3 +1,7 @@
+
+
+
+
 void solve() {
 
 	int l = 3;
@@ -18,4 +22,41 @@ void solve() {
 	debug(sqrt(l)*2, count);
 
 
+}
+
+
+
+//https://codeforces.com/contest/1780/problem/E
+void solve() {	
+	long long l, r;
+	cin >> l >> r;
+
+	if (l * 3 <= r) {
+		ll ans = r/2LL;
+		cout << ans << endl;
+		return;
+	} else {
+		long long ans = 0;
+
+		if (l*2 < r) {
+			ans += (r/2 - l);
+		}
+
+		for (long long j = 1; j<=l; j = max(j+1, l/(l/j) + 1)) {
+			int i = l/j;
+			ll top = l/i;
+			ll bottom = l/(i+1);
+			bottom++;
+			ll other = r / (i+2);
+			assert(((other + 1) * (i+2)) > r);
+			if ((l%i ==0) && ((i+1)*(l/i) <= r) && ((i+2)*(l/i) > r))
+				ans++;
+			if (other < bottom) continue;
+			ans += max(0LL,(min(top, other) - bottom + 1));
+		}
+
+		cout << ans << endl;
+
+
+	}
 }
