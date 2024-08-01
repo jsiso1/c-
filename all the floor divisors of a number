@@ -1,0 +1,21 @@
+void solve() {
+
+	int l = 3;
+	int count = 0;
+	for (int i = 1; i<=l; i = max(i+1, l/(l/i) + 1)) {
+		count++;
+		cout << l/i << " ";
+	}
+
+	set<int> st;
+	for (int i = 1; i<=l; ++i)
+		st.insert(l/i);
+	debug(st);	
+	debug((int)st.size(), count);
+	assert((int)st.size() == count);
+
+	
+	debug(sqrt(l)*2, count);
+
+
+}
